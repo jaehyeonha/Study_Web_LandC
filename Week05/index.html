@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <div id="cur"></div>
+    <input type="text" name="name" id="name">
+    <button type="submit">Submit</button>
+    <script>
+        const cur = document.getElementById('cur');
+        fetch('/users')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                const html = data.map(entry => `
+                <div>
+                    ${entry}
+                    <button class="delete-button" data-name="${entry}">Delete</button>
+                </div>
+            `).join('<br>');
+                console.log(html);
+            cur.innerHTML = html;
+            });
+
+        cur.addEventListener('click', (event) => {
+            if (event.target.classList.contains('delete-button')) {
+                const entryName = event.target.dataset.name;
+                fetch('/users', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: entryName,
+                    }),
+                })
+                    .then(() => {
+                        window.location.reload();
+                    });
+            }
+        });
+    
+
+        const name = document.getElementById('name');
+        const submit = document.querySelector('button');
+        submit.addEventListener('click', () => {
+            fetch('/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: name.value,
+                }),
+            })
+                .then(response => {
+                    window.location.reload();
+                })
+        });
+    </script>
+  </body>
+</html>
