@@ -13,27 +13,25 @@
         fetch('/users')
             .then(response => response.json())
             .then(data => {
-                console.log(data);
-                const html = data.map(entry => `
+                const html = data.map(entry =>
+                `
                 <div>
                     ${entry}
                     <button class="delete-button" data-name="${entry}">Delete</button>
                 </div>
-            `).join('<br>');
-                console.log(html);
+            `).join('');
             cur.innerHTML = html;
             });
 
         cur.addEventListener('click', (event) => {
             if (event.target.classList.contains('delete-button')) {
-                const entryName = event.target.dataset.name;
                 fetch('/users', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        name: entryName,
+                        name: event.target.dataset.name,
                     }),
                 })
                     .then(() => {
